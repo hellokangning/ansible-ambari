@@ -1,0 +1,38 @@
+---
+- name: Download Ambari repo
+  get_url:
+    url: http://public-repo-1.hortonworks.com/ambari/ubuntu14/2.x/updates/2.2.1.0/ambari.list
+    dest: /tmp/ambari.list
+    force: yes
+
+- name: Create apt list
+  copy:
+    src: /tmp/ambari.list
+    dest: /etc/apt/sources.list.d/ambari.list
+    force: yes
+
+- name: Apt key generation and upate 
+  command: "{{ item }}"
+  with_items:
+    - apt-key adv --recv-keys --keyserver keyserver.ubuntu.com B9733A7A07513CAD 
+    - apt-get update
+
+- name: Confirm Ambari packages downloaded
+  command: "{{ item }}"
+  with_items:
+    - apt-cache showpkg ambari-server 
+    - apt-cache showpkg ambari-agent 
+    - apt-cache showpkg ambari-metrics-assembly
+
+- name: Install pip step one
+  get_url:
+    url: https://bootstrap.pypa.io/get-pip.py
+    dest: /tmp/get-pip.py
+    force: yes
+
+- name: Install pip step two
+  command: python /tmp/get-pip.py
+
+- name: Install pexpect
+  command: pip install pexpect
+

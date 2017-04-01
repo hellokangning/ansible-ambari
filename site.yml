@@ -1,0 +1,32 @@
+---
+
+- name: Apply common configureations to all nodes
+  hosts: all
+  roles: 
+    - common
+  tags: 
+     - pre-ambari
+
+- name: Apply the ambari-server role 
+  hosts: ambari_server
+  roles:
+    - ambari-server
+  post_tasks:
+    - name: Cleanup the temporary files
+      file: path={{ item }} state=absent
+      with_items:
+        - /tmp/cluster_blueprint
+        - /tmp/cluster_template
+        - /tmp/alert_targets
+        - /tmp/hdprepo
+  tags:
+    - ambari-server-only
+
+- name: Apply the ambari-agent role 
+  hosts: ambari_agent 
+  any_errors_fatal: true
+  roles:
+    - ambari-agent
+  tags:
+    - ambari-agent-only
+

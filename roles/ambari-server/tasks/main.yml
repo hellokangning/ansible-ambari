@@ -1,0 +1,27 @@
+---
+- name: Install ambari-server
+  apt:
+    name: "{{ item }}"
+    update_cache: yes
+    state: installed
+  with_items:
+    - ambari-server
+
+- name: Configure ambari-server port
+  lineinfile: 
+    dest: /etc/ambari-server/conf/ambari.properties 
+    line: "client.api.port={{ http_port }}"
+
+- name: Run ambari-server setup
+  expect:
+    command: ambari-server setup 
+    responses:
+      'Customize user account for ambari-server daemon.*': 'n'
+      'Do you want to change Oracle JDK.*': 'n'
+      'Enter advanced database configuration.*': 'n'
+
+- name: Make sure ambari-server is running
+  command: ambari-server start
+
+- name : Check if ambari-server is up
+  command: ambari-server status
