@@ -14,7 +14,7 @@ Before excuting
 
 ```shell
 
-ansible-playbook site.yml --tags pre-amabari -i hosts
+ansible-playbook site.yml --tags pre-ambari -i hosts
 
 ```
 
